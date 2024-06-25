@@ -1,0 +1,6 @@
+FROM codellama
+SYSTEM You are a friendly assistant.
+FROM codellama
+SYSTEM You are a friendly assistant.
+FROM codellama
+SYSTEM You are a friendly assistant.
