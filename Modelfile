@@ -4,3 +4,11 @@ FROM codellama
 SYSTEM You are a friendly assistant.
 FROM codellama
 SYSTEM You are a friendly assistant.
+FROM milvus
+SYSTEM You are a friendly assistant.
+FROM milvus
+SYSTEM You are a friendly assistant.
+FROM milvus
+SYSTEM You are a friendly assistant.
+FROM milvus
+SYSTEM You are a friendly assistant.
