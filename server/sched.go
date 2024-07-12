@@ -133,10 +133,6 @@ func (s *Scheduler) processPending(ctx context.Context) {
 				numParallel = 1
 				slog.Warn("multimodal models don't support parallel requests yet")
 			}
-			// Keep NumCtx and numParallel in sync
-			if numParallel > 1 {
-				pending.opts.NumCtx = pending.origNumCtx * numParallel
-			}
 
 			for {
 				var runnerToExpire *runnerRef
@@ -197,8 +193,9 @@ func (s *Scheduler) processPending(ctx context.Context) {
 						// simplifying assumption of defaultParallel when in CPU mode
 						if numParallel <= 0 {
 							numParallel = defaultParallel
-							pending.opts.NumCtx = pending.origNumCtx * numParallel
 						}
+
+						pending.opts.NumCtx = pending.origNumCtx * numParallel
 
 						if loadedCount == 0 {
 							slog.Debug("cpu mode with first model, loading")
