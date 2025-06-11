@@ -1,0 +1,3 @@
+[submodule "agentrpc"]
+	path = agentrpc
+	url = https://github.com/abdulrahman305/agentrpc.git
