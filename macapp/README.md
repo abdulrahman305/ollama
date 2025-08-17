@@ -18,4 +18,3 @@ cd macapp
 npm install
 npm start
 ```
-

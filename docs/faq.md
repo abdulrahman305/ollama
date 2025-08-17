@@ -51,9 +51,10 @@ llama3:70b	bcfb190ca3a7	42 GB	100% GPU 	4 minutes from now
 ```
 
 The `Processor` column will show which memory the model was loaded in to:
-* `100% GPU` means the model was loaded entirely into the GPU
-* `100% CPU` means the model was loaded entirely in system memory
-* `48%/52% CPU/GPU` means the model was loaded partially onto both the GPU and into system memory
+
+- `100% GPU` means the model was loaded entirely into the GPU
+- `100% CPU` means the model was loaded entirely in system memory
+- `48%/52% CPU/GPU` means the model was loaded partially onto both the GPU and into system memory
 
 ## How do I configure Ollama server?
 
@@ -65,9 +66,9 @@ If Ollama is run as a macOS application, environment variables should be set usi
 
 1. For each environment variable, call `launchctl setenv`.
 
-    ```bash
-    launchctl setenv OLLAMA_HOST "0.0.0.0"
-    ```
+   ```bash
+   launchctl setenv OLLAMA_HOST "0.0.0.0"
+   ```
 
 2. Restart Ollama application.
 
@@ -79,10 +80,10 @@ If Ollama is run as a systemd service, environment variables should be set using
 
 2. For each environment variable, add a line `Environment` under section `[Service]`:
 
-    ```ini
-    [Service]
-    Environment="OLLAMA_HOST=0.0.0.0"
-    ```
+   ```ini
+   [Service]
+   Environment="OLLAMA_HOST=0.0.0.0"
+   ```
 
 3. Save and exit.
 
@@ -208,7 +209,7 @@ GPU acceleration is not available for Docker Desktop in macOS due to the lack of
 This can impact both installing Ollama, as well as downloading models.
 
 Open `Control Panel > Networking and Internet > View network status and tasks` and click on `Change adapter settings` on the left panel. Find the `vEthernel (WSL)` adapter, right click and select `Properties`.
-Click on `Configure` and open the `Advanced` tab. Search through each of the properties until you find `Large Send Offload Version 2 (IPv4)` and `Large Send Offload Version 2 (IPv6)`. *Disable* both of these
+Click on `Configure` and open the `Advanced` tab. Search through each of the properties until you find `Large Send Offload Version 2 (IPv4)` and `Large Send Offload Version 2 (IPv6)`. _Disable_ both of these
 properties.
 
 ## How can I preload a model into Ollama to get faster response times?
@@ -216,16 +217,19 @@ properties.
 If you are using the API you can preload a model by sending the Ollama server an empty request. This works with both the `/api/generate` and `/api/chat` API endpoints.
 
 To preload the mistral model using the generate endpoint, use:
+
 ```shell
 curl http://localhost:11434/api/generate -d '{"model": "mistral"}'
 ```
 
 To use the chat completions endpoint, use:
+
 ```shell
 curl http://localhost:11434/api/chat -d '{"model": "mistral"}'
 ```
 
 To preload a model using the CLI, use the command:
+
 ```shell
 ollama run llama3.1 ""
 ```
@@ -235,17 +239,20 @@ ollama run llama3.1 ""
 By default models are kept in memory for 5 minutes before being unloaded. This allows for quicker response times if you are making numerous requests to the LLM. You may, however, want to free up the memory before the 5 minutes have elapsed or keep the model loaded indefinitely. Use the `keep_alive` parameter with either the `/api/generate` and `/api/chat` API endpoints to control how long the model is left in memory.
 
 The `keep_alive` parameter can be set to:
-* a duration string (such as "10m" or "24h")
-* a number in seconds (such as 3600)
-* any negative number which will keep the model loaded in memory (e.g. -1 or "-1m")
-* '0' which will unload the model immediately after generating a response
+
+- a duration string (such as "10m" or "24h")
+- a number in seconds (such as 3600)
+- any negative number which will keep the model loaded in memory (e.g. -1 or "-1m")
+- '0' which will unload the model immediately after generating a response
 
 For example, to preload a model and leave it in memory use:
+
 ```shell
 curl http://localhost:11434/api/generate -d '{"model": "llama3", "keep_alive": -1}'
 ```
 
 To unload the model and free up memory use:
+
 ```shell
 curl http://localhost:11434/api/generate -d '{"model": "llama3", "keep_alive": 0}'
 ```
@@ -256,24 +263,24 @@ If you wish to override the `OLLAMA_KEEP_ALIVE` setting, use the `keep_alive` AP
 
 ## How do I manage the maximum number of requests the Ollama server can queue?
 
-If too many requests are sent to the server, it will respond with a 503 error indicating the server is overloaded.  You can adjust how many requests may be queue by setting `OLLAMA_MAX_QUEUE`.
+If too many requests are sent to the server, it will respond with a 503 error indicating the server is overloaded. You can adjust how many requests may be queue by setting `OLLAMA_MAX_QUEUE`.
 
 ## How does Ollama handle concurrent requests?
 
-Ollama supports two levels of concurrent processing.  If your system has sufficient available memory (system memory when using CPU inference, or VRAM for GPU inference) then multiple models can be loaded at the same time.  For a given model, if there is sufficient available memory when the model is loaded, it is configured to allow parallel request processing.
+Ollama supports two levels of concurrent processing. If your system has sufficient available memory (system memory when using CPU inference, or VRAM for GPU inference) then multiple models can be loaded at the same time. For a given model, if there is sufficient available memory when the model is loaded, it is configured to allow parallel request processing.
 
-If there is insufficient available memory to load a new model request while one or more models are already loaded, all new requests will be queued until the new model can be loaded.  As prior models become idle, one or more will be unloaded to make room for the new model.  Queued requests will be processed in order.  When using GPU inference new models must be able to completely fit in VRAM to allow concurrent model loads.
+If there is insufficient available memory to load a new model request while one or more models are already loaded, all new requests will be queued until the new model can be loaded. As prior models become idle, one or more will be unloaded to make room for the new model. Queued requests will be processed in order. When using GPU inference new models must be able to completely fit in VRAM to allow concurrent model loads.
 
-Parallel request processing for a given model results in increasing the context size by the number of parallel requests.  For example, a 2K context with 4 parallel requests will result in an 8K context and additional memory allocation.
+Parallel request processing for a given model results in increasing the context size by the number of parallel requests. For example, a 2K context with 4 parallel requests will result in an 8K context and additional memory allocation.
 
 The following server settings may be used to adjust how Ollama handles concurrent requests on most platforms:
 
-- `OLLAMA_MAX_LOADED_MODELS` - The maximum number of models that can be loaded concurrently provided they fit in available memory.  The default is 3 * the number of GPUs or 3 for CPU inference.
-- `OLLAMA_NUM_PARALLEL` - The maximum number of parallel requests each model will process at the same time.  The default will auto-select either 4 or 1 based on available memory.
+- `OLLAMA_MAX_LOADED_MODELS` - The maximum number of models that can be loaded concurrently provided they fit in available memory. The default is 3 \* the number of GPUs or 3 for CPU inference.
+- `OLLAMA_NUM_PARALLEL` - The maximum number of parallel requests each model will process at the same time. The default will auto-select either 4 or 1 based on available memory.
 - `OLLAMA_MAX_QUEUE` - The maximum number of requests Ollama will queue when busy before rejecting additional requests. The default is 512
 
-Note: Windows with Radeon GPUs currently default to 1 model maximum due to limitations in ROCm v5.7 for available VRAM reporting.  Once ROCm v6.2 is available, Windows Radeon will follow the defaults above.  You may enable concurrent model loads on Radeon on Windows, but ensure you don't load more models than will fit into your GPUs VRAM.
+Note: Windows with Radeon GPUs currently default to 1 model maximum due to limitations in ROCm v5.7 for available VRAM reporting. Once ROCm v6.2 is available, Windows Radeon will follow the defaults above. You may enable concurrent model loads on Radeon on Windows, but ensure you don't load more models than will fit into your GPUs VRAM.
 
 ## How does Ollama load models on multiple GPUs?
 
-Installing multiple GPUs of the same brand can be a great way to increase your available VRAM to load larger models.  When you load a new model, Ollama evaluates the required VRAM for the model against what is currently available.  If the model will entirely fit on any single GPU, Ollama will load the model on that GPU.  This typically provides the best performance as it reduces the amount of data transfering across the PCI bus during inference.  If the model does not fit entirely on one GPU, then it will be spread across all the available GPUs.
+Installing multiple GPUs of the same brand can be a great way to increase your available VRAM to load larger models. When you load a new model, Ollama evaluates the required VRAM for the model against what is currently available. If the model will entirely fit on any single GPU, Ollama will load the model on that GPU. This typically provides the best performance as it reduces the amount of data transfering across the PCI bus during inference. If the model does not fit entirely on one GPU, then it will be spread across all the available GPUs.

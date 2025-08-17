@@ -1,36 +1,44 @@
-from langchain.document_loaders import OnlinePDFLoader
-from langchain.vectorstores import Chroma
-from langchain.embeddings import GPT4AllEmbeddings
+import os
+import sys
+
 from langchain import PromptTemplate
-from langchain.llms import Ollama
 from langchain.callbacks.manager import CallbackManager
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain.chains import RetrievalQA
-import sys
-import os
+from langchain.document_loaders import OnlinePDFLoader
+from langchain.embeddings import GPT4AllEmbeddings
+from langchain.llms import Ollama
+from langchain.vectorstores import Chroma
+
 
 class SuppressStdout:
     def __enter__(self):
         self._original_stdout = sys.stdout
         self._original_stderr = sys.stderr
-        sys.stdout = open(os.devnull, 'w')
-        sys.stderr = open(os.devnull, 'w')
+        sys.stdout = open(os.devnull, "w")
+        sys.stderr = open(os.devnull, "w")
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         sys.stdout.close()
         sys.stdout = self._original_stdout
         sys.stderr = self._original_stderr
 
+
 # load the pdf and split it into chunks
-loader = OnlinePDFLoader("https://d18rn0p25nwr6d.cloudfront.net/CIK-0001813756/975b3e9b-268e-4798-a9e4-2a9a7c92dc10.pdf")
+loader = OnlinePDFLoader(
+    "https://d18rn0p25nwr6d.cloudfront.net/CIK-0001813756/975b3e9b-268e-4798-a9e4-2a9a7c92dc10.pdf"
+)
 data = loader.load()
 
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=0)
 all_splits = text_splitter.split_documents(data)
 
 with SuppressStdout():
-    vectorstore = Chroma.from_documents(documents=all_splits, embedding=GPT4AllEmbeddings())
+    vectorstore = Chroma.from_documents(
+        documents=all_splits, embedding=GPT4AllEmbeddings()
+    )
 
 while True:
     query = input("\nQuery: ")
@@ -51,7 +59,10 @@ while True:
         template=template,
     )
 
-    llm = Ollama(model="llama3.1", callback_manager=CallbackManager([StreamingStdOutCallbackHandler()]))
+    llm = Ollama(
+        model="llama3.1",
+        callback_manager=CallbackManager([StreamingStdOutCallbackHandler()]),
+    )
     qa_chain = RetrievalQA.from_chain_type(
         llm,
         retriever=vectorstore.as_retriever(),
