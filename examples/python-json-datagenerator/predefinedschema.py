@@ -1,18 +1,14 @@
-import requests
 import json
 import random
 
+import requests
+
 model = "llama3.1"
 template = {
-  "firstName": "",
-  "lastName": "",
-  "address": {
-    "street": "",
-    "city": "",
-    "state": "",
-    "zipCode": ""
-  },
-  "phoneNumber": ""
+    "firstName": "",
+    "lastName": "",
+    "address": {"street": "", "city": "", "state": "", "zipCode": ""},
+    "phoneNumber": "",
 }
 
 prompt = f"generate one realistically believable sample data set of a persons first name, last name, address in the US, and  phone number. \nUse the following template: {json.dumps(template)}."

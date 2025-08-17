@@ -6,9 +6,9 @@ Ollama provides a powerful templating engine backed by Go's built-in templating 
 
 A basic Go template consists of three main parts:
 
-* **Layout**: The overall structure of the template.
-* **Variables**: Placeholders for dynamic data that will be replaced with actual values when the template is rendered.
-* **Functions**: Custom functions or logic that can be used to manipulate the template's content.
+- **Layout**: The overall structure of the template.
+- **Variables**: Placeholders for dynamic data that will be replaced with actual values when the template is rendered.
+- **Functions**: Custom functions or logic that can be used to manipulate the template's content.
 
 Here's an example of a simple chat template:
 
@@ -20,9 +20,9 @@ Here's an example of a simple chat template:
 
 In this example, we have:
 
-* A basic messages structure (layout)
-* Three variables: `Messages`, `Role`, and `Content` (variables)
-* A custom function (action) that iterates over an array of items (`range .Messages`) and displays each item
+- A basic messages structure (layout)
+- Three variables: `Messages`, `Role`, and `Content` (variables)
+- A custom function (action) that iterates over an array of items (`range .Messages`) and displays each item
 
 ## Adding templates to your model
 
@@ -61,7 +61,7 @@ TEMPLATE """{{- if .System }}<|start_header_id|>system<|end_header_id|>
 
 `Messages[].Role` (string): role which can be one of `system`, `user`, `assistant`, or `tool`
 
-`Messages[].Content` (string):  message content
+`Messages[].Content` (string): message content
 
 `Messages[].ToolCalls` (list): list of tools the model wants to call
 
@@ -99,9 +99,9 @@ TEMPLATE """{{- if .System }}<|start_header_id|>system<|end_header_id|>
 
 Keep the following tips and best practices in mind when working with Go templates:
 
-* **Be mindful of dot**: Control flow structures like `range` and `with` changes the value `.`
-* **Out-of-scope variables**: Use `$.` to reference variables not currently in scope, starting from the root
-* **Whitespace control**: Use `-` to trim leading (`{{-`) and trailing (`-}}`) whitespace
+- **Be mindful of dot**: Control flow structures like `range` and `with` changes the value `.`
+- **Out-of-scope variables**: Use `$.` to reference variables not currently in scope, starting from the root
+- **Whitespace control**: Use `-` to trim leading (`{{-`) and trailing (`-}}`) whitespace
 
 ## Examples
 
