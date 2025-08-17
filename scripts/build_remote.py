@@ -2,6 +2,7 @@
 import subprocess
 import sys
 from urllib.parse import urlparse
+
 from git import Repo
 
 # Helper script to be able to build on remote repos using git to push local changes
@@ -9,14 +10,14 @@ from git import Repo
 #
 # Typical windows remote git config looks like this:
 #
-#[remote "windows-pa"]
+# [remote "windows-pa"]
 #        url = jdoe@desktop-foo:C:/Users/Jdoe/code/ollama
 #        fetch = +refs/heads/*:refs/remotes/windows-pa/*
 #        uploadpack = powershell git upload-pack
 #        receivepack = powershell git receive-pack
 #
 
-# TODO - add argpare and make this more configurable 
+# TODO - add argpare and make this more configurable
 # - force flag becomes optional
 # - generate, build or test ...
 
@@ -25,15 +26,17 @@ from git import Repo
 repo = Repo(".")
 
 # On linux, add links in /usr/local/bin to the go binaries to avoid needing this
-# GoCmd = "/usr/local/go/bin/go" 
-GoCmd = "go" 
+# GoCmd = "/usr/local/go/bin/go"
+GoCmd = "go"
 
 if repo.is_dirty():
     print("Tree is dirty.  Commit your changes before running this script")
     sys.exit(1)
 
 if len(sys.argv) != 2:
-    print("Please specify the remote name: " + ', '.join([r.name for r in repo.remotes]))
+    print(
+        "Please specify the remote name: " + ", ".join([r.name for r in repo.remotes])
+    )
     sys.exit(1)
 remote_name = sys.argv[1]
 
@@ -53,7 +56,7 @@ print("Force pushing content to remote...")
 remote.push(force=True).raise_if_error()
 
 print("Ensuring correct branch checked out on remote via ssh...")
-subprocess.check_call(['ssh', netloc, 'cd', path, ';', 'git', 'checkout', branch_name])
+subprocess.check_call(["ssh", netloc, "cd", path, ";", "git", "checkout", branch_name])
 
 
 # TODO - add some hardening to try to figure out how to set up the path properly
@@ -61,16 +64,28 @@ subprocess.check_call(['ssh', netloc, 'cd', path, ';', 'git', 'checkout', branch
 # TODO - or consider paramiko maybe
 
 print("Running Windows Build Script")
-subprocess.check_call(['ssh', netloc, 'cd', path, ';', "powershell", "-ExecutionPolicy", "Bypass", "-File", "./scripts/build_windows.ps1"])
+subprocess.check_call(
+    [
+        "ssh",
+        netloc,
+        "cd",
+        path,
+        ";",
+        "powershell",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "./scripts/build_windows.ps1",
+    ]
+)
 
 # print("Building")
 # subprocess.check_call(['ssh', netloc, 'cd', path, ';', GoCmd, 'build', '.'])
 
 print("Copying built result")
-subprocess.check_call(['scp', netloc +":"+ path + "/ollama.exe",  './dist/'])
+subprocess.check_call(["scp", netloc + ":" + path + "/ollama.exe", "./dist/"])
 
 print("Copying installer")
-subprocess.check_call(['scp', netloc +":"+ path + "/dist/Ollama Setup.exe",  './dist/'])
-
-
-
+subprocess.check_call(
+    ["scp", netloc + ":" + path + "/dist/Ollama Setup.exe", "./dist/"]
+)
