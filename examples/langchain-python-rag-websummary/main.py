@@ -1,6 +1,6 @@
-from langchain_community.llms import Ollama
-from langchain_community.document_loaders import WebBaseLoader
 from langchain.chains.summarize import load_summarize_chain
+from langchain_community.document_loaders import WebBaseLoader
+from langchain_community.llms import Ollama
 
 loader = WebBaseLoader("https://ollama.com/blog/run-llama2-uncensored-locally")
 docs = loader.load()

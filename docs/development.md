@@ -139,7 +139,6 @@ In addition to the common Windows development tools described above, install CUD
 
 - [NVIDIA CUDA](https://docs.nvidia.com/cuda/cuda-installation-guide-microsoft-windows/index.html)
 
-
 #### Windows ROCm (AMD Radeon)
 
 In addition to the common Windows development tools described above, install AMDs HIP package after installing MSVC.
