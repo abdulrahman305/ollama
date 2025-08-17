@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "charactergen": "tsx character-generator.ts", 
+    "charactergen": "tsx character-generator.ts",
     "start": "tsx mentors.ts"
   },
   "dependencies": {

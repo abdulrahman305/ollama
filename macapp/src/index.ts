@@ -94,8 +94,8 @@ function trayIconPath() {
       ? path.join(assetPath, 'iconDarkUpdateTemplate.png')
       : path.join(assetPath, 'iconDarkTemplate.png')
     : updateAvailable
-    ? path.join(assetPath, 'iconUpdateTemplate.png')
-    : path.join(assetPath, 'iconTemplate.png')
+      ? path.join(assetPath, 'iconUpdateTemplate.png')
+      : path.join(assetPath, 'iconTemplate.png')
 }
 
 function updateTrayIcon() {
@@ -210,9 +210,12 @@ async function checkUpdate() {
 function init() {
   if (app.isPackaged) {
     checkUpdate()
-    setInterval(() => {
-      checkUpdate()
-    }, 60 * 60 * 1000)
+    setInterval(
+      () => {
+        checkUpdate()
+      },
+      60 * 60 * 1000
+    )
   }
 
   updateTray()
