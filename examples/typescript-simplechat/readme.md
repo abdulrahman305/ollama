@@ -13,12 +13,12 @@ You can see in the **chat** function that is actually calling the endpoint is si
 ```typescript
 const body = {
   model: model,
-  messages: messages
+  messages: messages,
 }
 
-const response = await fetch("http://localhost:11434/api/chat", {
-  method: "POST",
-  body: JSON.stringify(body)
+const response = await fetch('http://localhost:11434/api/chat', {
+  method: 'POST',
+  body: JSON.stringify(body),
 })
 ```
 
