@@ -13,17 +13,11 @@
           },
           "format": {
             "type": "string",
-            "enum": [
-              "celsius",
-              "fahrenheit"
-            ],
+            "enum": ["celsius", "fahrenheit"],
             "description": "The temperature unit to use. Infer this from the users location."
           }
         },
-        "required": [
-          "location",
-          "format"
-        ]
+        "required": ["location", "format"]
       }
     }
   }
