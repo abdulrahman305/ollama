@@ -1,9 +1,9 @@
 {
-    "azureFunctions.deploySubpath": "langchaingo/milvus-sdk-go/milvus/k8sgpt-operator/milvus-helm/minio/bootcamp/applications/nlp/question_answering_system/server/src/operations",
-    "azureFunctions.scmDoBuildDuringDeployment": true,
-    "azureFunctions.projectLanguage": "Python",
-    "azureFunctions.projectRuntime": "~4",
-    "debug.internalConsoleOptions": "neverOpen",
-    "azureFunctions.projectLanguageModel": 2,
-    "azureFunctions.projectSubpath": "langchaingo/milvus-sdk-go/milvus/k8sgpt-operator/milvus-helm/minio/bootcamp/applications/nlp/question_answering_system/server/src/operations"
+  "azureFunctions.deploySubpath": "langchaingo/milvus-sdk-go/milvus/k8sgpt-operator/milvus-helm/minio/bootcamp/applications/nlp/question_answering_system/server/src/operations",
+  "azureFunctions.scmDoBuildDuringDeployment": true,
+  "azureFunctions.projectLanguage": "Python",
+  "azureFunctions.projectRuntime": "~4",
+  "debug.internalConsoleOptions": "neverOpen",
+  "azureFunctions.projectLanguageModel": 2,
+  "azureFunctions.projectSubpath": "langchaingo/milvus-sdk-go/milvus/k8sgpt-operator/milvus-helm/minio/bootcamp/applications/nlp/question_answering_system/server/src/operations"
 }

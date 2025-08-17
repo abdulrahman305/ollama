@@ -98,7 +98,7 @@ The final response in the stream also includes additional data about the generat
 - `context`: an encoding of the conversation used in this response, this can be sent in the next request to keep a conversational memory
 - `response`: empty if the response was streamed, if not streamed, this will contain the full response
 
-To calculate how fast the response is generated in tokens per second (token/s), divide `eval_count` / `eval_duration` * `10^9`.
+To calculate how fast the response is generated in tokens per second (token/s), divide `eval_count` / `eval_duration` \* `10^9`.
 
 ```json
 {
@@ -919,9 +919,7 @@ curl http://localhost:11434/api/show -d '{
     "parent_model": "",
     "format": "gguf",
     "family": "llama",
-    "families": [
-      "llama"
-    ],
+    "families": ["llama"],
     "parameter_size": "8.0B",
     "quantization_level": "Q4_0"
   },
@@ -942,11 +940,11 @@ curl http://localhost:11434/api/show -d '{
     "llama.vocab_size": 128256,
     "tokenizer.ggml.bos_token_id": 128000,
     "tokenizer.ggml.eos_token_id": 128009,
-    "tokenizer.ggml.merges": [],            // populates if `verbose=true`
+    "tokenizer.ggml.merges": [], // populates if `verbose=true`
     "tokenizer.ggml.model": "gpt2",
     "tokenizer.ggml.pre": "llama-bpe",
-    "tokenizer.ggml.token_type": [],        // populates if `verbose=true`
-    "tokenizer.ggml.tokens": []             // populates if `verbose=true`
+    "tokenizer.ggml.token_type": [], // populates if `verbose=true`
+    "tokenizer.ggml.tokens": [] // populates if `verbose=true`
   }
 }
 ```
@@ -1172,10 +1170,12 @@ curl http://localhost:11434/api/embed -d '{
 ```json
 {
   "model": "all-minilm",
-  "embeddings": [[
-    0.010071029, -0.0017594862, 0.05007221, 0.04692972, 0.054916814,
-    0.008599704, 0.105441414, -0.025878139, 0.12958129, 0.031952348
-  ]],
+  "embeddings": [
+    [
+      0.010071029, -0.0017594862, 0.05007221, 0.04692972, 0.054916814, 0.008599704, 0.105441414, -0.025878139,
+      0.12958129, 0.031952348
+    ]
+  ],
   "total_duration": 14143917,
   "load_duration": 1019500,
   "prompt_eval_count": 8
@@ -1196,17 +1196,21 @@ curl http://localhost:11434/api/embed -d '{
 ```json
 {
   "model": "all-minilm",
-  "embeddings": [[
-    0.010071029, -0.0017594862, 0.05007221, 0.04692972, 0.054916814,
-    0.008599704, 0.105441414, -0.025878139, 0.12958129, 0.031952348
-  ],[
-    -0.0098027075, 0.06042469, 0.025257962, -0.006364387, 0.07272725,
-    0.017194884, 0.09032035, -0.051705178, 0.09951512, 0.09072481
-  ]]
+  "embeddings": [
+    [
+      0.010071029, -0.0017594862, 0.05007221, 0.04692972, 0.054916814, 0.008599704, 0.105441414, -0.025878139,
+      0.12958129, 0.031952348
+    ],
+    [
+      -0.0098027075, 0.06042469, 0.025257962, -0.006364387, 0.07272725, 0.017194884, 0.09032035, -0.051705178,
+      0.09951512, 0.09072481
+    ]
+  ]
 }
 ```
 
 ## List Running Models
+
 ```shell
 GET /api/ps
 ```
@@ -1237,9 +1241,7 @@ A single JSON object will be returned.
         "parent_model": "",
         "format": "gguf",
         "family": "llama",
-        "families": [
-          "llama"
-        ],
+        "families": ["llama"],
         "parameter_size": "7.2B",
         "quantization_level": "Q4_0"
       },

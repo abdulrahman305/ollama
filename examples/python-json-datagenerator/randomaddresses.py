@@ -1,6 +1,7 @@
-import requests
 import json
 import random
+
+import requests
 
 countries = [
     "United States",

@@ -14,11 +14,11 @@ FROM /path/to/file.gguf
 
 If the model being imported is one of these architectures, it can be imported directly into Ollama through a Modelfile:
 
- - LlamaForCausalLM
- - MistralForCausalLM
- - MixtralForCausalLM
- - GemmaForCausalLM
- - Phi3ForCausalLM
+- LlamaForCausalLM
+- MistralForCausalLM
+- MixtralForCausalLM
+- GemmaForCausalLM
+- Phi3ForCausalLM
 
 ```dockerfile
 FROM /path/to/safetensors/directory
