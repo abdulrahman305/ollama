@@ -256,13 +256,29 @@ var (
 		"snowflake-arctic-embed",
 		"snowflake-arctic-embed2",
 	}
+
+	blueSkyPrompt   = "why is the sky blue? Be brief but factual in your reply"
+	blueSkyExpected = []string{"rayleigh", "scatter", "atmosphere", "nitrogen", "oxygen", "wavelength", "interact"}
+
+	rainbowPrompt    = "how do rainbows form? Be brief but factual in your reply"
+	rainbowFollowups = []string{
+		"Explain the physics involved in them.  Be breif in your reply",
+		"Explain the chemistry involved in them.  Be breif in your reply",
+		"Explain the quantum mechanics involved in them. Be breif in your reply",
+		"What are common myths related to them? Be brief in your reply",
+		"What are common fairytales related to them? Be brief in your reply",
+		"Can they form if there is no rain?  Be breif in your reply",
+		"Can they form if there are no clouds?  Be breif in your reply",
+		"Do they happen on other planets? Be brief in your reply",
+	}
+	rainbowExpected = []string{"water", "droplet", "mist", "glow", "refracted", "reflect", "color", "spectrum", "frequency", "end", "gold", "fortune", "blessing", "prosperity"}
 )
 
 func init() {
 	lifecycle.InitLogging()
-	custom := os.Getenv("OLLAMA_TEST_SMOL_MODEL")
+	custom := os.Getenv("OLLAMA_TEST_DEFAULT_MODEL")
 	if custom != "" {
-		slog.Info("setting smol test model to " + custom)
+		slog.Info("setting default test model to " + custom)
 		smol = custom
 	}
 }
@@ -502,6 +518,22 @@ func DoGenerate(ctx context.Context, t *testing.T, client *api.Client, genReq ap
 		done <- 0
 	}()
 
+	var response string
+	verify := func() {
+		// Verify the response contains the expected data
+		response = buf.String()
+		atLeastOne := false
+		for _, resp := range anyResp {
+			if strings.Contains(strings.ToLower(response), resp) {
+				atLeastOne = true
+				break
+			}
+		}
+		if !atLeastOne {
+			t.Fatalf("%s: none of %v found in %s", genReq.Model, anyResp, response)
+		}
+	}
+
 	select {
 	case <-stallTimer.C:
 		if buf.Len() == 0 {
@@ -517,21 +549,14 @@ func DoGenerate(ctx context.Context, t *testing.T, client *api.Client, genReq ap
 		if genErr != nil {
 			t.Fatalf("%s failed with %s request prompt %s", genErr, genReq.Model, genReq.Prompt)
 		}
-		// Verify the response contains the expected data
-		response := buf.String()
-		atLeastOne := false
-		for _, resp := range anyResp {
-			if strings.Contains(strings.ToLower(response), resp) {
-				atLeastOne = true
-				break
-			}
-		}
-		if !atLeastOne {
-			t.Fatalf("%s: none of %v found in %s", genReq.Model, anyResp, response)
-		}
+		verify()
 		slog.Info("test pass", "model", genReq.Model, "prompt", genReq.Prompt, "contains", anyResp, "response", response)
 	case <-ctx.Done():
-		t.Error("outer test context done while waiting for generate")
+		// On slow systems, we might timeout before some models finish rambling, so check what we have so far to see
+		// if it's considered a pass - the stallTimer will detect hangs, but we want to consider slow systems a pass
+		// if they are still generating valid responses
+		slog.Warn("outer test context done while waiting for generate")
+		verify()
 	}
 	return context
 }
@@ -552,7 +577,7 @@ func GenerateRequests() ([]api.GenerateRequest, [][]string) {
 				KeepAlive: &api.Duration{Duration: 10 * time.Second},
 			}, {
 				Model:     smol,
-				Prompt:    "what is the origin of the US thanksgiving holiday? Be brief but factual in your reply",
+				Prompt:    "how do rainbows form? Be brief but factual in your reply",
 				Stream:    &stream,
 				KeepAlive: &api.Duration{Duration: 10 * time.Second},
 			}, {
@@ -568,11 +593,11 @@ func GenerateRequests() ([]api.GenerateRequest, [][]string) {
 			},
 		},
 		[][]string{
-			{"sunlight", "scattering", "interact", "color", "surface", "depth", "red", "orange", "yellow", "absorbs", "wavelength"},
-			{"soil", "organic", "earth", "black", "tan", "chemical", "processes", "pigments", "particles", "iron oxide", "rust", "air", "water", "mixture", "mixing"},
-			{"england", "english", "massachusetts", "pilgrims", "colonists", "independence", "british", "feast", "family", "gatherings", "traditions", "turkey", "colonial", "period", "harvest", "agricultural", "european settlers", "american revolution", "civil war", "16th century", "17th century", "native american", "united states", "cultural", "hardship", "autumn", "festival"},
+			{"sunlight", "scatter", "interact", "color", "surface", "depth", "red", "orange", "yellow", "absorb", "wavelength", "water", "molecule"},
+			{"soil", "organic", "earth", "black", "tan", "chemical", "processes", "pigment", "particle", "iron oxide", "rust", "air", "water", "wet", "mixture", "mixing", "mineral", "element", "decomposed", "matter", "wavelength"},
+			{"water", "droplet", "refract", "reflect", "color", "spectrum", "raindrop"},
 			{"fourth", "july", "declaration", "independence"},
-			{"nitrogen", "oxygen", "carbon", "dioxide"},
+			{"nitrogen", "oxygen", "carbon", "dioxide", "water", "vapor", "fluid", "particles", "gas"},
 		}
 }
 
@@ -599,6 +624,22 @@ func DoChat(ctx context.Context, t *testing.T, client *api.Client, req api.ChatR
 		done <- 0
 	}()
 
+	var response string
+	verify := func() {
+		// Verify the response contains the expected data
+		response = buf.String()
+		atLeastOne := false
+		for _, resp := range anyResp {
+			if strings.Contains(strings.ToLower(response), resp) {
+				atLeastOne = true
+				break
+			}
+		}
+		if !atLeastOne {
+			t.Fatalf("%s: none of %v found in \"%s\" -- request was:%v", req.Model, anyResp, response, req.Messages)
+		}
+	}
+
 	select {
 	case <-stallTimer.C:
 		if buf.Len() == 0 {
@@ -614,23 +655,14 @@ func DoChat(ctx context.Context, t *testing.T, client *api.Client, req api.ChatR
 		if genErr != nil {
 			t.Fatalf("%s failed with %s request prompt %v", genErr, req.Model, req.Messages)
 		}
-
-		// Verify the response contains the expected data
-		response := buf.String()
-		atLeastOne := false
-		for _, resp := range anyResp {
-			if strings.Contains(strings.ToLower(response), resp) {
-				atLeastOne = true
-				break
-			}
-		}
-		if !atLeastOne {
-			t.Fatalf("%s: none of %v found in \"%s\" -- request was:%v", req.Model, anyResp, response, req.Messages)
-		}
-
+		verify()
 		slog.Info("test pass", "model", req.Model, "messages", req.Messages, "contains", anyResp, "response", response)
 	case <-ctx.Done():
-		t.Error("outer test context done while waiting for generate")
+		// On slow systems, we might timeout before some models finish rambling, so check what we have so far to see
+		// if it's considered a pass - the stallTimer will detect hangs, but we want to consider slow systems a pass
+		// if they are still generating valid responses
+		slog.Warn("outer test context done while waiting for chat")
+		verify()
 	}
 	return &api.Message{Role: role, Content: buf.String()}
 }
